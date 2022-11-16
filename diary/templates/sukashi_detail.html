@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}日記詳細 | Private Diary{% endblock %}
+
+{% block active_diary_list %}active{% endblock %}
+
+
+{% block contents %}
+<div class="container">
+    <div class="my-div-style w-100">
+        <div class="row">
+            <div class="col-3">
+                <strong>型</strong>
+            </div>
+            <div class="col-9">
+                {{ object.stype }}
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row">
+            <div class="col-3">
+                <strong>採取地</strong>
+            </div>
+            <div class="col-9">
+                {{ object.splace }}
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row">
+            <div class="col-3">
+                <strong>レア度</strong>
+            </div>
+            <div class="col-9">
+                {{ object.rare }}
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row">
+            <div class="col-3">
+                <strong>本文</strong>
+            </div>
+            <div class="col-9">
+                {{ object.content|linebreaksbr }}
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row">
+            <div class="col-3">
+                <strong>写真</strong>
+            </div>
+            <div class="col-3">
+                {% if object.photo1 %}
+                    <img src="{{ object.photo1.url }}" width="200" height="200"/>
+                {% endif %}
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row">
+            <div class="col-3">
+                <strong>作成日時</strong>
+            </div>
+            <div class="col-9">
+                {{ object.created_at }}
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row">
+            <div class="col-3">
+                <strong>更新日時</strong>
+            </div>
+            <div class="col-9">
+                {{ object.updated_at }}
+            </div>
+        </div>
+
+        <a class="btn btn-success mt-5 mb-3" href="{% url 'diary:sukashi_update' object.pk %}">編集</a>
+        <a class="btn btn-danger mt-5 ml-2 mb-3" href="{% url 'diary:sukashi_delete' object.pk %}">削除</a>
+    </div>
+</div>
+{% endblock %}
