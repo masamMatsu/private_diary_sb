@@ -16,28 +16,62 @@
         <div class="my-div-style w-100">
             <div class="col-lg-8 col-md-10 mx-auto">
                 <div class="clearfix">
-                    <a class="btn btn-primary float-right" href="{% url 'diary:sukashi_create' %}">新規作成</a>
-                  </div>
+                    <a class="btn btn-primary float-right" href="{% url 'diary:sukashi_timeline' %}">戻る</a>
+                </div>
+
+{{request.GET.user}}
+<form action="" method="get">
+    <fieldset>
+        <div>
+          <h4>
+            <input type="checkbox" id="my_c" name="my_c" value="1" {% if request.GET.my_c == "1" %} checked {% endif %}>
+            <label for="coding">マイコレクション</label>
+          </h4>
+        </div>
+        <div>
+          <h4>
+            <input type="checkbox" id="open_c" name="open_c" value="1" {% if request.GET.open_c == "1" %} checked {% endif %}>
+            <label for="music">公開コレクション</label>
+          </h4>
+        </div>
+      </fieldset>
+      <h4>
+        レア度 <select name="query" >
+        <!-- <option hidden></option> -->
+        <option ></option>
+        <option value=1 {% if request.GET.query == "1" %} selected {% endif %}>1　どこにでもある</option>
+        <option value=2 {% if request.GET.query == "2" %} selected {% endif %}>2　ちょっと探せばある</option>
+        <option value=3 {% if request.GET.query == "3" %} selected {% endif %}>3　ちょっと探してもない</option>
+        <option value=4 {% if request.GET.query == "4" %} selected {% endif %}>4　かなり探すとある</option>
+        <option value=5 {% if request.GET.query == "5" %} selected {% endif %}>5　奇跡の出会い</option>
+        </select>
+        
+      </h4>
+    <button type="submit">検索</button>
+</form>
+<!-- {{request.user}} -->
+    {% if count %}
+        <h4>{{count}}件見つかりました</h4>
+    {% endif %}
+<!-- {% if request.GET.query %}
+<h2>レア度【{{ request.GET.query }}】一覧</h2>
+{% endif %} -->
                 {% for sukashi in sukashi_list %}
                     <div class="post-preview">
                         <a href="{% url 'diary:sukashi_detail' sukashi.pk %}">
-                            <h4 class="post-subtitle">
+                            <h6 class="post-subtitle" style="float: left;margin: 0 30px 30px 0;">
                                 {% if sukashi.photo1 %}
-                             <img src="{{ sukashi.photo1.url}}" width="100" height="100"/>
-                           {% endif %}
-                            型名:{{ sukashi.stype|truncatechars:20 }}
-                            &#009&#009　レア度:{{ sukashi.rare|truncatechars:20 }}
-                          </h4>
-                          <h4 class="post-subtitle">
-                          </h4>
-                          <h4 class="post-subtitle">
-                          </h4>
+                                    <img src="{{ sukashi.photo1.url}}" width="150" height="150"/>
+                                {% endif %}
+                                <br>ユーザ:{{ sukashi.user|truncatechars:20 }}
+                                <br>レア度:{{ sukashi.rare|truncatechars:20 }}
+                            </h6>
                         </a>
-                        <p class="post-meta">{{ sukashi.created_at }}</p>
+                        <!-- <p class="post-meta">{{ sukashi.created_at }}</p> -->
                     </div>
-                    <hr>
+                    <!-- <hr> -->
                 {% empty %}
-                    <p>透かしブロックがありません。</p>
+<!--                    <p>透かしブロックがありません。</p>-->
                 {% endfor %}
 
                 <!-- ページネーション処理 -->

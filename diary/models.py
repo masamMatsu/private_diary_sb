@@ -35,7 +35,6 @@ class Sukashi(models.Model):
         (3,'非公開')
     )
 
-
     user = models.ForeignKey(CustomUser, verbose_name='ユーザー', on_delete=models.PROTECT)
     stype = models.CharField(verbose_name='型', max_length=40)
     splace = models.CharField(verbose_name='採取地', max_length=40)
@@ -48,6 +47,21 @@ class Sukashi(models.Model):
 
     class Meta:
         verbose_name_plural = 'Sukashi'
+
+    def __str__(self):
+        return str(self.rare)+' '+str(self.user)+' '+self.content
+
+
+class Good(models.Model):
+    """いいねモデル"""
+
+    user = models.ForeignKey(CustomUser, verbose_name='ユーザー', on_delete=models.PROTECT)
+    sukashi = models.ForeignKey(Sukashi, verbose_name='透かしブロック', on_delete=models.PROTECT)
+    created_at = models.DateTimeField(verbose_name='作成日時', auto_now_add=True)
+    updated_at = models.DateTimeField(verbose_name='更新日時', auto_now=True)
+
+    class Meta:
+        verbose_name_plural = 'Good'
 
     def __str__(self):
         return str(self.rare)+' '+str(self.user)+' '+self.content

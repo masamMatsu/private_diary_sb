@@ -87,17 +87,6 @@ class DiaryDeleteView(LoginRequiredMixin, generic.DeleteView):
         messages.success(self.request, "日記を削除しました。")
         return super().delete(request, *args, **kwargs)
 
-
-
-class SukashiListView(LoginRequiredMixin, generic.ListView):
-    model = Sukashi
-    template_name = 'sukashi_list.html'
-    paginate_by = 3
-
-    def get_queryset(self):
-        sukashis = Sukashi.objects.filter(user=self.request.user).order_by('-created_at')
-        return sukashis
-
 class SukashiDetailView(LoginRequiredMixin, generic.DetailView):
     model = Sukashi
     template_name = 'sukashi_detail.html'
@@ -153,59 +142,87 @@ class SukashiRareListView(LoginRequiredMixin, generic.ListView):
         sukashis = Sukashi.objects.all().order_by('-rare')
         return sukashis
 
-class SukashiFList(LoginRequiredMixin, generic.ListView):
+class SukashiTimelineView(LoginRequiredMixin, generic.ListView):
     model = Sukashi
-    template_name = 'sukashi_f_list.html'
+    template_name = 'sukashi_timeline.html'
+
+    def get_queryset(self):
+        # sukashies = Sukashi.objects.filter(user=self.request.user).order_by('-created_at')
+        sukashies = Sukashi.objects.filter(Q(user=self.request.user)|Q(oflag=1)).order_by('-created_at')
+        return sukashies
+
+
+class SukashiList(LoginRequiredMixin, generic.ListView):
+    model = Sukashi
+    template_name = 'sukashi_list.html'
     # paginate_by = 12
 
     def get_context_data(self, **kwargs):
+        # m_word = "1";
+        # o_word = "1";
+        q_word = self.request.GET.get('query')
+        m_word = self.request.GET.get('my_c')
+        o_word = self.request.GET.get('open_c')
+
         context = super().get_context_data(**kwargs)
-        context['count'] = Sukashi.objects.count()
-        # context['count'] = Sukashi.objects.filter(rare=5).count()
+
+        if m_word == "1" and o_word == "1":
+            if q_word:
+                context['count'] = Sukashi.objects.filter(Q(rare=q_word,user=self.request.user)|Q(rare=q_word,oflag=1)).count()
+            else:
+                context['count'] = Sukashi.objects.filter(Q(user=self.request.user)|Q(oflag=1)).count()
+        elif m_word == "1" and o_word != "1":
+            if q_word:
+                context['count'] = Sukashi.objects.filter(rare=q_word,user=self.request.user).count()
+            else:
+                context['count'] = Sukashi.objects.filter(user=self.request.user).count()
+        elif m_word != "1" and o_word == "1":
+            if q_word:
+                context['count'] = Sukashi.objects.filter(rare=q_word,oflag=1).exclude(user=self.request.user).count()
+            else:
+                context['count'] = Sukashi.objects.filter(oflag=1).exclude(user=self.request.user).count()
+        elif m_word != "1" and o_word != "1":
+            object_list = Sukashi.objects.none()
+            # context['count'] = Sukashi.objects.filter(Q(user=self.request.user) | Q(oflag=1)).count()
+
+
+        # context['count'] = Sukashi.objects.count()
         return context
 
     def get_queryset(self):
+        m_word = "1";
+        o_word = "1";
         q_word = self.request.GET.get('query')
         m_word = self.request.GET.get('my_c')
         o_word = self.request.GET.get('open_c')
 
         # object_list = Sukashi.objects.filter(Q(user=self.request.user)|Q(oflag=1))    
-        object_list = Sukashi.objects.none()
+        # object_list = Sukashi.objects.none()
+        object_list = Sukashi.objects.filter(Q(user=self.request.user) | Q(oflag=1))
 
- 
+        print("m_word",m_word)
+        print("o_word",o_word)
+        print("q_word",q_word)
+
         if m_word == "1" and o_word == "1":
             if q_word:
                 object_list = Sukashi.objects.filter(Q(rare=q_word,user=self.request.user)|Q(rare=q_word,oflag=1))
             else:
-                object_list = Sukashi.objects.filter(Q(user=self.request.user)|Q(oflag=1))    
+                object_list = Sukashi.objects.filter(Q(user=self.request.user)|Q(oflag=1))
         elif m_word == "1" and o_word != "1":
             if q_word:
                 object_list = Sukashi.objects.filter(rare=q_word,user=self.request.user)
             else:
-                object_list = Sukashi.objects.filter(user=self.request.user)    
+                object_list = Sukashi.objects.filter(user=self.request.user)
         elif m_word != "1" and o_word == "1":
             if q_word:
                 object_list = Sukashi.objects.filter(rare=q_word,oflag=1).exclude(user=self.request.user)
             else:
-                object_list = Sukashi.objects.filter(oflag=1).exclude(user=self.request.user)    
+                object_list = Sukashi.objects.filter(oflag=1).exclude(user=self.request.user)
         elif m_word != "1" and o_word != "1":
-            # if q_word:
-            #     object_list = Sukashi.objects.filter(Q(rare=q_word,user=self.request.user)|Q(rare=q_word,oflag=1))
-            # else:
-            #     object_list = Sukashi.objects.filter(Q(user=self.request.user)|Q(oflag=1))    
             object_list = Sukashi.objects.none()
-        
+            # object_list = Sukashi.objects.filter(Q(user=self.request.user) | Q(oflag=1))
+
         return object_list
         
         
-        # if q_word and m_word and o_word:
-        #     object_list = Sukashi.objects.filter(Q(rare=q_word,user=self.request.user)|Q(rare=q_word,oflag=1))
-        # else:
-        #     object_list = Sukashi.objects.filter(Q(user=self.request.user) | Q(oflag=1)).all()
-        # return object_list
-
-        # if m_word == "1":
-        #     object_list = Sukashi.objects.filter(user=self.request.user)
-        # else:
-        #     object_list = Sukashi.objects.filter(oflag=1)
-        # return object_list
